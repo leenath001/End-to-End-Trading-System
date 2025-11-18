@@ -54,11 +54,10 @@ def main():
 
                 order_manager.place_order(sym, signal, TRADE_QTY)
 
-            print("Sleeping...\n")
             time.sleep(LOOP_DELAY)
 
         except KeyboardInterrupt:
-            print("CTRL+C detected — stopping system.")
+            print("Keyboard Interrupt — stopping system.")
             break
 
         except Exception as e:
