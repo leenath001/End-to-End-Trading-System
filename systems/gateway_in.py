@@ -1,14 +1,10 @@
 ## Functions to access yfinance, alphavantage (AV), and alpaca API endpoints for equities
 
-
 # yf imports
 import yfinance as yf
 
 # AV imports 
-import os 
 from dotenv import load_dotenv
-import websocket
-import json
 from time import time
 from datetime import datetime
 import threading
@@ -17,7 +13,7 @@ import pandas as pd
 # alpaca imports 
 import alpaca_trade_api as tradeapi
 
-# yf data function (backtests?)
+# yf data function (STRICTLY FOR BACKTESTS)
 class YF_ENDPOINT:
     _instance = None
 
@@ -45,7 +41,7 @@ class YF_ENDPOINT:
         self.handlers = []
         self.data_dict = {}
 
-    def register_handler(self,func: function):
+    def register_handler(self,func):
         """
         Registers handler functions for our data. Ideally for backtest 
         """
@@ -77,38 +73,11 @@ class YF_ENDPOINT:
         for t in threads:
             t.join()
 
-# Polygon/Massive API ws stream for live T/Q data
-class POLYGON_ENDPOINT:
-    _instance = None
-
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-    
-    def __init__(self,key, symbols: list):
-        self.key = key
-        self.symbols = symbols
-        self.url = "wss://socket.polygon.io/stocks"
-        self.ws = None
-        self.thread = None
-        self.ws_errors = []
-        self.handler_errors = []
-        self.handlers = []
-
-    def register_handler(self,func: function):
-        """
-        Registers handler functions for our data
-        """
-        self.handlers.append(func)
-
-    # UNFINISHED
-
 # Alpaca API endpoint for 15m delayed quotes
 class ALPACA_ENDPOINT:
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls, key, secret, symbols):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
@@ -124,7 +93,7 @@ class ALPACA_ENDPOINT:
         self.errors = []
         self.handlers = []
 
-    def register_handler(self,func: function):
+    def register_handler(self,func):
         """
         Registers handler functions for our data
         """

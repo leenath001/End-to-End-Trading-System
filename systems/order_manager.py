@@ -2,9 +2,7 @@
 
 # alpaca imports
 import alpaca_trade_api as tradeapi
-
-# IBKR imports
-#from IBKR_engine import IBKRExecutionEngine
+from time import time
 
 class ALPACA_ORDER_MANAGER:
     """
@@ -42,7 +40,53 @@ class ALPACA_ORDER_MANAGER:
             time_in_force=tif,
         )
 
-class IBKR_ORDER_MANAGER:
+
+class OrderManager:
     """
-    Tracks exposures, calls IBKR to execute orders
+    Keeps track of exposures, executes orders via Alpaca.
+    Behaves like your IBKR-order manager.
     """
+
+    def __init__(self, key, secret, gateway=None):
+        self.gateway = ALPACA_ORDER_MANAGER(key, secret)
+        self.local_positions = {}
+        self.last_trade_time = {}
+
+    def sync_positions(self):
+        """
+        Sync from Alpaca API
+        """
+        positions = self.gateway.get_positions()  
+        self.local_positions = {sym: qty for sym, qty in positions}
+
+    def get_position(self, symbol):
+        return self.local_positions.get(symbol, 0)
+
+    def place_order(self, symbol, action, qty):
+        """
+        action: "BUY" or "SELL" (upper-case)
+        qty: the intended trade size
+        """
+        self.sync_positions()
+        current_pos = self.get_position(symbol)
+        print(f"[Position] {symbol}: {current_pos}")
+
+        now = time.time()
+
+        if action == "BUY":
+            if current_pos <= 0:
+                order_qty = abs(current_pos) + qty
+                print(f"[Order] BUY {order_qty} {symbol}")
+                self.gateway.send_order(symbol, "buy", order_qty)
+                self.last_trade_time[symbol] = now
+            else:
+                print("[Skip] Already long; buy blocked.")
+
+        elif action == "SELL":
+            if current_pos >= 0:
+                order_qty = abs(current_pos) + qty
+                print(f"[Order] SELL {order_qty} {symbol}")
+                self.gateway.send_order(symbol, "sell", order_qty)
+                self.last_trade_time[symbol] = now
+            else:
+                print("[Skip] Already short; sell blocked.")

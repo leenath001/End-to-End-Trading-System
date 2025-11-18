@@ -1,7 +1,7 @@
 ## strategy signal generation
 
 # imports 
-from equity import Equity
+from systems.equity import Equity
 import numpy as np
 import time
 from datetime import datetime
