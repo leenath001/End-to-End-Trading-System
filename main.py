@@ -12,7 +12,7 @@ load_dotenv()
 KEY = os.getenv('ALPACA_API_KEY')
 SECRET = os.getenv('ALPACA_SECRET')
 SYMBOLS = ["AAPL", "NVDA", "MSFT"]
-LOOP_DELAY = 10   
+LOOP_DELAY = 1   
 TRADE_QTY = 10    
 
 # CREATE SINGLETON OBJECTS
