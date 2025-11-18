@@ -18,5 +18,8 @@ class BACKTESTING_ENGINE:
             for strat in self.strategies:   # make faster?
                 price = bars[strat.symbol]['close']
                 signal = strat.compute_signal(self)
+
+                if signal: 
+                    order = strat.generate_order
         
 
