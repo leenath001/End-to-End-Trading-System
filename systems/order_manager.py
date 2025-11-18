@@ -40,11 +40,10 @@ class ALPACA_ORDER_MANAGER:
             time_in_force=tif,
         )
 
-
 class OrderManager:
     """
     Keeps track of exposures, executes orders via Alpaca.
-    Behaves like your IBKR-order manager.
+    Behaves like IBKR-order manager.
     """
 
     def __init__(self, key, secret, gateway=None):
@@ -54,7 +53,7 @@ class OrderManager:
 
     def sync_positions(self):
         """
-        Sync from Alpaca API
+        Sync positions to local storage from Alpaca API
         """
         positions = self.gateway.get_positions()  
         self.local_positions = {sym: qty for sym, qty in positions}
@@ -69,24 +68,23 @@ class OrderManager:
         """
         self.sync_positions()
         current_pos = self.get_position(symbol)
-        print(f"[Position] {symbol}: {current_pos}")
 
         now = time.time()
 
         if action == "BUY":
             if current_pos <= 0:
                 order_qty = abs(current_pos) + qty
-                print(f"[Order] BUY {order_qty} {symbol}")
+                print(f"BUY {order_qty} {symbol}")
                 self.gateway.send_order(symbol, "buy", order_qty)
                 self.last_trade_time[symbol] = now
             else:
-                print("[Skip] Already long; buy blocked.")
+                print("Already long!")
 
         elif action == "SELL":
             if current_pos >= 0:
                 order_qty = abs(current_pos) + qty
-                print(f"[Order] SELL {order_qty} {symbol}")
+                print(f"SELL {order_qty} {symbol}")
                 self.gateway.send_order(symbol, "sell", order_qty)
                 self.last_trade_time[symbol] = now
             else:
-                print("[Skip] Already short; sell blocked.")
+                print("Already short!")

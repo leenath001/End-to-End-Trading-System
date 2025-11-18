@@ -13,6 +13,12 @@ import pandas as pd
 # alpaca imports 
 import alpaca_trade_api as tradeapi
 
+#-----------------------------------------------------------------------------------#
+# Use YF_ENDPOINT to grab historical data for backtests. See parameter specs below.
+#
+# Use ALPACA_ENDPOINT for 15m delayed quotes and to send orders. 
+#-----------------------------------------------------------------------------------#
+
 # yf data function (STRICTLY FOR BACKTESTS)
 class YF_ENDPOINT:
     _instance = None
@@ -56,7 +62,7 @@ class YF_ENDPOINT:
             self.data_dict[ticker] = data
         except Exception as e:
             self.errors.append(f"Error @ {datetime.now()}: {e}")
-            return f"Datastream Error @ {datetime.now()}: {e}"
+            print(f"Datastream Error @ {datetime.now()}: {e}")
         
     def data_grabber(self):
         """
@@ -117,8 +123,8 @@ class ALPACA_ENDPOINT:
                 h(symbol, self.data_dict[symbol])
 
         except Exception as e:
-            self.errors.append(f"Error @ {datetime.now()}: {e}")
-            return f"Datastream Error @ {datetime.now()}: {e}"
+            self.errors.append(f"Datastream Error @ {datetime.now()}: {e}")
+            print(f"Datastream Error @ {datetime.now()}: {e}")
         
     def grab_quotes(self):
         """

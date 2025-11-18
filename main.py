@@ -15,15 +15,15 @@ SYMBOLS = ["AAPL", "NVDA", "MSFT"]
 LOOP_DELAY = 1   
 TRADE_QTY = 10    
 
-# CREATE SINGLETON OBJECTS
+# CREATE OBJECTS
 alpaca_feed = ALPACA_ENDPOINT(KEY, SECRET, SYMBOLS)
 strategies = {sym: MeanReversion(sym, window=20, z_thresh=1.5) for sym in SYMBOLS}
 order_manager = OrderManager(KEY, SECRET)
 
-# HANDLER: UPDATE EQUITY CLASS WITH QUOTES
+# HANDLER FUNC: UPDATE EQUITY CLASS WITH QUOTES
 def update_equity_handler(symbol, q):
     """
-    Incoming quote from Alpaca, store in Equity singleton.
+    Incoming quote from Alpaca, store in Equity singleton
     """
     e = Equity(symbol)
     e.update_quote(
@@ -48,7 +48,6 @@ def main():
                 signal = strat.compute_signal()
 
                 if signal is None:
-                    print(f"[{sym}] No signal")
                     continue
 
                 print(f"[{sym}] SIGNAL: {signal}")

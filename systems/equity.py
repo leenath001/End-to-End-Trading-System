@@ -6,7 +6,7 @@ import numpy as np
 
 class Equity:
     """
-    Works with Alpaca and AlphaVantage API
+    Equity class stores deque of last trades, most recent quotes, and contains methods to update
     """
     _instances = {}  
 
