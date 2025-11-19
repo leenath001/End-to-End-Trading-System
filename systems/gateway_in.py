@@ -110,7 +110,7 @@ class ALPACA_ENDPOINT:
         Fetches delayed latest quote
         """
         try:
-            quote = self.api.get_latest_quote(symbol,feed = "delayed")
+            quote = self.api.get_latest_quote(symbol,feed = "delayed_sip")
             self.data_dict[symbol] = {
                 "ask": quote.ask_price,
                 "ask_size": quote.ask_size,
