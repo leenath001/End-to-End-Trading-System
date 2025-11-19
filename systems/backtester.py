@@ -46,7 +46,7 @@ class BACKTESTING_ENGINE:
         SHARES = 10
 
         while True:
-            tick = self.load_next_tick()   # or load_data() if you kept that name
+            tick = self.load_next_tick()
             if tick is None:
                 break
 
