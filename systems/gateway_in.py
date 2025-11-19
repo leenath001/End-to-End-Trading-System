@@ -23,7 +23,7 @@ import alpaca_trade_api as tradeapi
 class YF_ENDPOINT:
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls, symbols, period, interval):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
@@ -90,6 +90,7 @@ class YF_ENDPOINT:
         """
         Uses lazy execution for vectorized backtesting
         Returns (timestamp, quotes for all symbols)
+        Price size timestamp
         """
         timestamps = self.get_timestamps()
 
@@ -98,11 +99,9 @@ class YF_ENDPOINT:
             for sym in self.symbols:
                 row = self.data_dict[sym].loc[ts]
                 bars[sym] = {
-                    "open": row["Open"],
-                    "high": row["High"],
-                    "low": row["Low"],
                     "close": row["Close"],
-                    "volume": row["Volume"]
+                    "volume": row["Volume"],
+                    "timestamp": ts
                 }
 
         yield ts, bars
