@@ -11,6 +11,6 @@ endpoint = YF_ENDPOINT(symbols, "7d", "1m")
 endpoint.data_grabber()
 data = endpoint.data_dict['NVDA']
 
-for _ in range(len(data)):
+for _ in range(3):
     print(endpoint.stream())
 

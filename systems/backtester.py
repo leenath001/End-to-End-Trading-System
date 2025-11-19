@@ -19,16 +19,20 @@ class BACKTESTING_ENGINE:
             self.eq[sym] = Equity(sym)
 
     def load_data(self):
+        """
+        Loads data sourced from YF into equity class
+        """
         endpoint = self.data_endpoint(self.symbols, '7d', '1m')
         endpoint.data_grabber()
-        sample = endpoint.data_dict[self.symbols[0]]
 
-        for _ in range(len(sample)):        
-            ts, bars = endpoint.stream()
+        for ts, bars in endpoint.stream():
             for sym in self.symbols:
-                self.eq[sym].update_trade(bars[sym]['close'],bars[sym]['volume'],ts)
+                bar = bars[sym]
+                self.eq[sym].update_trade(price = bar["close"], size  = bar["volume"],timestamp = ts)
                 
     def run(self):
-
-if __name__ == "__main__":
-    pass
+        """
+        Runs simulation backtest using pre-loaded YF data.
+        load_data() must be called before this.
+        """
+        pass 

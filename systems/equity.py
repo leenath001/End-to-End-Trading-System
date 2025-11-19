@@ -21,7 +21,6 @@ class Equity:
         if not hasattr(self, "_initialized"):
             self.symbol = symbol.upper()
             self.trades = deque(maxlen = 1000)
-            self.historical = None
             self.last_trade = None
             self.quotes = {"Bid": None,"Bid Size": None, "Ask": None,"Ask Size": None, "Mid": None, "Spread": None}
             self._initialized = True
