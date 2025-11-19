@@ -69,22 +69,34 @@ class OrderManager:
         self.sync_positions()
         current_pos = self.get_position(symbol)
 
-        now = time.time()
+        now = time()
 
         if action == "BUY":
-            if current_pos <= 0:
-                order_qty = abs(current_pos) + qty
+            if current_pos < 0:
+                order_qty = min(abs(current_pos), qty)
                 print(f"BUY {order_qty} {symbol}")
                 self.gateway.send_order(symbol, "buy", order_qty)
                 self.last_trade_time[symbol] = now
+
+            elif current_pos == 0:
+                print(f"BUY {qty} {symbol}")
+                self.gateway.send_order(symbol, "buy", qty)
+                self.last_trade_time[symbol] = now
+
             else:
                 print("Already long!")
 
         elif action == "SELL":
-            if current_pos >= 0:
-                order_qty = abs(current_pos) + qty
+            if current_pos > 0:
+                order_qty = min(current_pos, qty)
                 print(f"SELL {order_qty} {symbol}")
                 self.gateway.send_order(symbol, "sell", order_qty)
                 self.last_trade_time[symbol] = now
+
+            elif current_pos == 0:
+                print(f"SELL {qty} {symbol}")
+                self.gateway.send_order(symbol, "sell", qty)
+                self.last_trade_time[symbol] = now
+
             else:
                 print("Already short!")

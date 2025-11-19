@@ -17,7 +17,7 @@ TRADE_QTY = 10
 
 # CREATE OBJECTS
 alpaca_feed = ALPACA_ENDPOINT(KEY, SECRET, SYMBOLS)
-strategies = {sym: MeanReversion(sym, window=20, z_thresh=1.5) for sym in SYMBOLS}
+strategies = {sym: MeanReversion(sym, window=10, z_thresh=1.3) for sym in SYMBOLS}
 order_manager = OrderManager(KEY, SECRET)
 
 # HANDLER FUNC: UPDATE EQUITY CLASS WITH QUOTES
@@ -30,8 +30,9 @@ def update_equity_handler(symbol, q):
         bp=q["bid"],
         bsz=q["bid_size"],
         ap=q["ask"],
-        asksz=q["ask_size"],
-    )
+        asksz=q["ask_size"])
+    mid_price = (q["bid"] + q["ask"]) / 2
+    e.update_trade(price=mid_price, size=1, timestamp=q["timestamp"])
 
 alpaca_feed.register_handler(update_equity_handler)
 
