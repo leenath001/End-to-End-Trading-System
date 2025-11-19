@@ -104,7 +104,7 @@ class YF_ENDPOINT:
                     "timestamp": ts
                 }
 
-        yield ts, bars
+            yield ts, bars
 
 # Alpaca API endpoint for 15m delayed quotes
 class ALPACA_ENDPOINT:
