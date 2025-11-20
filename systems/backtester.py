@@ -1,8 +1,11 @@
 # Backtester using data collected from YF_endpoint
 # YF_ENDPOINT -> equity.data_dict -> strategy -> 
 
-import systems.strategy as strat
-from systems.equity import Equity
+
+from equity import Equity
+from gateway_in import YF_ENDPOINT   # adjust import as needed
+import strategy as strat
+import matplotlib.pyplot as plt
 
 class BACKTESTING_ENGINE:
     
@@ -18,7 +21,7 @@ class BACKTESTING_ENGINE:
         self.logs = []
 
         # set up endpoint & stream
-        self.endpoint = self.data_endpoint_cls(self.symbols, '7d', '1m')
+        self.endpoint = self.data_endpoint_cls(self.symbols, '730d','60m')
         self.endpoint.data_grabber()
         self._stream_iter = self.endpoint.stream()
 
@@ -43,7 +46,7 @@ class BACKTESTING_ENGINE:
         return ts, bars
 
     def run(self):
-        SHARES = 10
+        SHARES = 100
 
         while True:
             tick = self.load_next_tick()
@@ -54,9 +57,14 @@ class BACKTESTING_ENGINE:
             ticker = self.strategy.symbol
             signal = self.strategy.compute_signal()
 
-            price = bars[ticker]["close"]
-            trade_value = SHARES * price
+            
 
+            price = bars[ticker]["close"]
+            
+            trade_value = SHARES * price.values[0]
+            if signal is None:
+                print('Strategy is inside Threshold so no signal')
+                continue
             if signal == "BUY":
                 if self.last_trade[ticker] == 1:
                     print(f"{ts} | Already long {ticker}, skipping BUY")
@@ -81,19 +89,46 @@ class BACKTESTING_ENGINE:
                 else:
                     print(f"Not enough position to sell {SHARES} shares of {ticker}")
 
+            print(self.positions)
+            portfolio_value = self.cash + sum(self.positions[s] * bars[s]["close"] for s in self.symbols)
+            self.equity_curve.append((ts, portfolio_value.values[0]))
 
-                portfolio_value = self.cash + sum(self.positions[s] * bars[s]["close"] for s in self.symbols)
-                self.equity_curve.append((ts, portfolio_value))
+
+def plot_equity_curve(dates, equity_values, title="Trading System Equity Curve", strategy_name="Strategy"):
+
+    # 1. Create the Figure and Axes
+    fig, ax = plt.subplots(figsize=(12, 6)) # Larger figure size for better detail
+
+   
+    ax.plot(
+        dates, 
+        equity_values, 
+        label=strategy_name, 
+        color='mediumblue', # A nice, professional blue
+        linewidth=2,
+        alpha=0.8 # Slight transparency
+    )
+
+    # 3. Add Labels and Title
+    ax.set_title(title, fontsize=16, fontweight='bold', color='darkslategray')
+    ax.set_xlabel("Date", fontsize=12)
+    ax.set_ylabel("Equity Value ($)", fontsize=12)
+    ax.grid(True, linestyle='--', alpha=0.6)
+    fig.autofmt_xdate(rotation=45)     
+    ax.legend(loc='best', fontsize=10)    
+    plt.tight_layout()
+    
+    # 9. Show the plot
+    plt.show()
 
 if __name__ == "__main__":
-    import strategy as strat
-    from gateway_in import YF_ENDPOINT   # adjust import as needed
+    
 
     # ---------------------------------------------------------
     # USER CONFIG
     # ---------------------------------------------------------
     SYMBOLS = ["AAPL"]
-    STRATEGY = strat.MeanReversion(symbol="AAPL")   # replace with your strategy class
+    STRATEGY = strat.RandomStrategy(symbol="AAPL")   # replace with your strategy class
     DATA_ENDPOINT = YF_ENDPOINT                  # your data feed class
     INITIAL_CASH = 100_000
 
@@ -122,6 +157,10 @@ if __name__ == "__main__":
 
     if engine.equity_curve:
         final_ts, final_val = engine.equity_curve[-1]
+        eqty = [i[1] for i in engine.equity_curve]
+        dates = [i[0] for i in engine.equity_curve]
         print(f"Final portfolio value at {final_ts}: {final_val:,.2f}")
+        print(len(eqty))
+        plot_equity_curve(dates,eqty)
     else:
         print("No equity curve data recorded.")
