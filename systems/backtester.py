@@ -85,4 +85,43 @@ class BACKTESTING_ENGINE:
                 portfolio_value = self.cash + sum(self.positions[s] * bars[s]["close"] for s in self.symbols)
                 self.equity_curve.append((ts, portfolio_value))
 
+if __name__ == "__main__":
+    import strategy as strat
+    from gateway_in import YF_ENDPOINT   # adjust import as needed
 
+    # ---------------------------------------------------------
+    # USER CONFIG
+    # ---------------------------------------------------------
+    SYMBOLS = ["AAPL"]
+    STRATEGY = strat.MeanReversion(symbol="AAPL")   # replace with your strategy class
+    DATA_ENDPOINT = YF_ENDPOINT                  # your data feed class
+    INITIAL_CASH = 100_000
+
+    # ---------------------------------------------------------
+    # INIT BACKTEST ENGINE
+    # ---------------------------------------------------------
+    engine = BACKTESTING_ENGINE(
+        symbols=SYMBOLS,
+        strategy=STRATEGY,
+        data_endpoint=DATA_ENDPOINT,
+        initial_cash=INITIAL_CASH,
+    )
+
+    print("Starting backtest...")
+    engine.run()
+    print("Backtest complete.")
+
+    # ---------------------------------------------------------
+    # OPTIONAL: DISPLAY RESULTS
+    # ---------------------------------------------------------
+    print("\n=== FINAL RESULTS ===")
+    print(f"Final cash: {engine.cash:,.2f}")
+    print("Final positions:")
+    for sym, qty in engine.positions.items():
+        print(f"  {sym}: {qty} shares")
+
+    if engine.equity_curve:
+        final_ts, final_val = engine.equity_curve[-1]
+        print(f"Final portfolio value at {final_ts}: {final_val:,.2f}")
+    else:
+        print("No equity curve data recorded.")
