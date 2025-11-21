@@ -79,6 +79,33 @@ class YF_ENDPOINT:
         for t in threads:
             t.join()
 
+    def get_timestamps(self):
+        """
+        Returns master timestamp index
+        """
+        sample = self.symbols[0]
+        return self.data_dict[sample].index
+    
+    def stream(self):
+        """
+        Uses lazy execution for vectorized backtesting
+        Returns (timestamp, quotes for all symbols)
+        Price size timestamp
+        """
+        timestamps = self.get_timestamps()
+
+        for ts in timestamps:
+            bars = {}
+            for sym in self.symbols:
+                row = self.data_dict[sym].loc[ts]
+                bars[sym] = {
+                    "close": row["Close"],
+                    "volume": row["Volume"],
+                    "timestamp": ts
+                }
+
+            yield ts, bars
+
 # Alpaca API endpoint for 15m delayed quotes
 class ALPACA_ENDPOINT:
     _instance = None
