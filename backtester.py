@@ -2,16 +2,16 @@
 # YF_ENDPOINT -> equity.data_dict -> strategy -> 
 
 
-from equity import Equity
-from gateway_in import YF_ENDPOINT   # adjust import as needed
-import strategy as strat
+from systems.equity import Equity
+from systems.gateway_in import YF_ENDPOINT   # adjust import as needed
+import systems.strategy as strat
 import matplotlib.pyplot as plt
 
 class BACKTESTING_ENGINE:
     
     def __init__(self, symbols, strategy, data_endpoint, initial_cash=100000):
         self.symbols = symbols
-        self.strategy = strategy                # singular
+        self.strategy = strategy                
         self.data_endpoint_cls = data_endpoint
         self.cash = initial_cash
         self.positions = {sym: 0 for sym in self.symbols}
@@ -96,7 +96,6 @@ class BACKTESTING_ENGINE:
 
 def plot_equity_curve(dates, equity_values, title="Trading System Equity Curve", strategy_name="Strategy"):
 
-    # 1. Create the Figure and Axes
     fig, ax = plt.subplots(figsize=(12, 6)) # Larger figure size for better detail
 
    
@@ -128,8 +127,8 @@ if __name__ == "__main__":
     # USER CONFIG
     # ---------------------------------------------------------
     SYMBOLS = ["AAPL"]
-    STRATEGY = strat.RandomStrategy(symbol="AAPL")   # replace with your strategy class
-    DATA_ENDPOINT = YF_ENDPOINT                  # your data feed class
+    STRATEGY = strat.RandomStrategy(symbol="AAPL")   
+    DATA_ENDPOINT = YF_ENDPOINT
     INITIAL_CASH = 100_000
 
     # ---------------------------------------------------------

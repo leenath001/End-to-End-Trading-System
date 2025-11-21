@@ -1,7 +1,7 @@
 ## strategy signal generation
 
 # imports 
-from equity import Equity
+from .equity import Equity
 import numpy as np
 import time
 from datetime import datetime
@@ -57,5 +57,14 @@ class MeanReversion(Strategy):
             self.strategy_errors.append(f"Strategty Error @ {datetime.now()}: {e}")
             print(f"Strategty Error @ {datetime.now()}: {e}")
             
-        
+class RandomStrategy(Strategy):
+
+    def __init__(self, symbol, window = 20, z_thresh = 2.0):
+        super().__init__(symbol)
+        self.window = ["BUY", 'SELL',None]
+        self.index = 0
+    
+    def compute_signal(self):
+        self.index+=1
+        return self.window[(self.index-1)%3]  
         

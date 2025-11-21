@@ -12,8 +12,8 @@ load_dotenv()
 KEY = os.getenv('ALPACA_API_KEY')
 SECRET = os.getenv('ALPACA_SECRET')
 SYMBOLS = ["AAPL", "NVDA", "MSFT"]
-LOOP_DELAY = 1   
-TRADE_QTY = 10    
+LOOP_DELAY = 25   
+TRADE_QTY = 75    
 
 # CREATE OBJECTS
 alpaca_feed = ALPACA_ENDPOINT(KEY, SECRET, SYMBOLS)
