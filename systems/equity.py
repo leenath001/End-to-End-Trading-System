@@ -31,7 +31,7 @@ class Equity:
         """
         dic = {"Price": price, "Size": size, "Timestamp": timestamp}
         self.trades.append(dic)
-        self.last_trade = price
+        self.last_trade = price.iloc[0]
 
     def update_quote(self, bp, bsz, ap, asksz):
         """

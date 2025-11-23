@@ -127,9 +127,9 @@ if __name__ == "__main__":
     # USER CONFIG
     # ---------------------------------------------------------
     SYMBOLS = ["AAPL"]
-    STRATEGY = strat.RandomStrategy(symbol="AAPL")   
+    STRATEGY = strat.AutoRegresion(symbol="AAPL")   
     DATA_ENDPOINT = YF_ENDPOINT
-    INITIAL_CASH = 100_000
+    INITIAL_CASH = 80_000
 
     # ---------------------------------------------------------
     # INIT BACKTEST ENGINE

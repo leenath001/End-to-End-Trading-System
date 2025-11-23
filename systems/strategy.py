@@ -1,8 +1,7 @@
 ## strategy signal generation
-## try - autoreg of 20m bars?
 
 # imports 
-from equity import Equity
+from systems.equity import Equity # DO NOT delete 'systems.', needed for upstream imports
 import numpy as np
 import time
 import statsmodels.api as sm
@@ -58,7 +57,7 @@ class MeanReversion(Strategy):
             print(f"[MR] Strategty Error @ {datetime.now()}: {e}")
             
 class RandomStrategy(Strategy):
-
+    ## is this acc random
     def __init__(self, symbol, window = 20, z_thresh = 2.0):
         super().__init__(symbol)
         self.window = ["BUY", 'SELL',None]
@@ -78,15 +77,16 @@ class AutoRegresion(Strategy):
         ## Runs AR(1) model on historical quotes in equity class 
         y = self.equity.get_prices()
         model = sm.tsa.AutoReg(y,lags = 1, trend='n')
-        next_period_pred = model.fit()
-        return next_period_pred
+        fitted = model.fit()
+        next_period_pred = fitted.forecast(steps=1)
+        return next_period_pred[0]  
 
     def compute_signal(self):
         try:
             pred = self._regression()
             if pred >= self.equity.last_trade:
                 return "BUY"
-            elif pred < self.equity.last_trade:
+            else:
                 return "SELL"
             
         except Exception as e:
