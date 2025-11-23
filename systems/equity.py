@@ -28,10 +28,12 @@ class Equity:
     def update_trade(self, price, size, timestamp):
         """
         Updates recent trades deque
+        mode 0 -> trading bot
+        mode 1 -> backtesting
         """
         dic = {"Price": price, "Size": size, "Timestamp": timestamp}
         self.trades.append(dic)
-        self.last_trade = price.iloc[0]
+        self.last_trade = price 
 
     def update_quote(self, bp, bsz, ap, asksz):
         """

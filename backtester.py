@@ -38,7 +38,7 @@ class BACKTESTING_ENGINE:
         for sym in self.symbols:
             bar = bars[sym]
             self.eq[sym].update_trade(
-                price=bar["close"],
+                price=bar["close"].iloc[0],
                 size=bar["volume"],
                 timestamp=ts,
             )
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------------
     # USER CONFIG
     # ---------------------------------------------------------
-    SYMBOLS = ["AAPL"]
+    SYMBOLS = ["AAPL","NVDA"] #ISSUES WHEN PASSING TWO SYMBOLS 
     STRATEGY = strat.AutoRegresion(symbol="AAPL")   
     DATA_ENDPOINT = YF_ENDPOINT
     INITIAL_CASH = 80_000
