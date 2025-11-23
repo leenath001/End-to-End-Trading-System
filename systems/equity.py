@@ -44,7 +44,7 @@ class Equity:
         self.quotes["Mid"] = (bp + ap) / 2
         self.quotes["Spread"] = (ap - bp)
 
-    def get_prices(self,window = 10):
+    def get_prices(self,window = 20):
         """
         Grabs prices for signal generation
         """

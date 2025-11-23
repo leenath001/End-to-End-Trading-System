@@ -1,9 +1,11 @@
 ## strategy signal generation
+## try - autoreg of 20m bars?
 
 # imports 
-from .equity import Equity
+from equity import Equity
 import numpy as np
 import time
+import statsmodels.api as sm
 from datetime import datetime
 from abc import ABC, abstractmethod
 
@@ -13,13 +15,11 @@ class Strategy(ABC):
         self.symbol = symbol.upper()
         self.equity = Equity(symbol)
         self.strategy_errors = []
-
     
     @abstractmethod
     def compute_signal(self):
         pass
 
-# child class inherets from Strategy
 class MeanReversion(Strategy):
     """
     Simple Z-score mrev intraday strategy
@@ -54,8 +54,8 @@ class MeanReversion(Strategy):
             return None
 
         except Exception as e:
-            self.strategy_errors.append(f"Strategty Error @ {datetime.now()}: {e}")
-            print(f"Strategty Error @ {datetime.now()}: {e}")
+            self.strategy_errors.append(f"[MR] Strategty Error @ {datetime.now()}: {e}")
+            print(f"[MR] Strategty Error @ {datetime.now()}: {e}")
             
 class RandomStrategy(Strategy):
 
@@ -67,4 +67,28 @@ class RandomStrategy(Strategy):
     def compute_signal(self):
         self.index+=1
         return self.window[(self.index-1)%3]  
-        
+    
+class AutoRegresion(Strategy):
+    ## AR1 strategy based on previous bars
+
+    def __init__(self, symbol):
+        super().__init__(symbol)
+
+    def _regression(self):
+        ## Runs AR(1) model on historical quotes in equity class 
+        y = self.equity.get_prices()
+        model = sm.tsa.AutoReg(y,lags = 1, trend='n')
+        next_period_pred = model.fit()
+        return next_period_pred
+
+    def compute_signal(self):
+        try:
+            pred = self._regression()
+            if pred >= self.equity.last_trade:
+                return "BUY"
+            elif pred < self.equity.last_trade:
+                return "SELL"
+            
+        except Exception as e:
+            self.strategy_errors.append(f"[AR] Strategy Error @ {datetime.now()}: {e}")
+            print(f"[AR] Strategy Error @ {datetime.now()}: {e}")
