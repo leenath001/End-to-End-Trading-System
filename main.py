@@ -3,7 +3,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import os 
 from systems.equity import Equity
-from systems.strategy import MeanReversion
+from systems.strategy import MeanReversion, AutoRegresion
 from systems.gateway_in import ALPACA_ENDPOINT
 from systems.order_manager import OrderManager
 
@@ -17,7 +17,8 @@ TRADE_QTY = 75
 
 # CREATE OBJECTS
 alpaca_feed = ALPACA_ENDPOINT(KEY, SECRET, SYMBOLS)
-strategies = {sym: MeanReversion(sym, window=10, z_thresh=1.3) for sym in SYMBOLS}
+strategies = {sym: [MeanReversion(sym, window=10, z_thresh=1.3),
+                    AutoRegresion(sym)] for sym in SYMBOLS}
 order_manager = OrderManager(KEY, SECRET)
 
 # HANDLER FUNC: UPDATE EQUITY CLASS WITH QUOTES
